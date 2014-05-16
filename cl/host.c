@@ -4,29 +4,31 @@
 #include <stdlib.h>
 #define MAX_SOURCE_SIZE (0x100000)
 
-//int main() {
-//    printf("%f \n", util_integrate(0, 4, 100));
-//    return 0;
-//}
 
-float util_integrate(float a, float b, float n) {
+float util_integrate(float a, float b, float n, char* f) {
     char* source_str;
     size_t source_size;
     int i = 0;
-        
+
     float dx = (b-a) / (n*1.0);
     float *results = (float*) malloc(n * sizeof(float));
-    for(i=0; i < n; ++i)    results[i] = 0;
 
     FILE* fp = fopen("cl/kernel.cl", "r");
     if(fp == 0){
         printf("kernel file not found");
+        free(results);
         exit(0);
     }
 
-    source_str = (char*) malloc(sizeof(char) * MAX_SOURCE_SIZE);
-    source_size = fread( source_str, 1, MAX_SOURCE_SIZE, fp);
+    char *temp_source;
+    temp_source = (char*) malloc(sizeof(char) * MAX_SOURCE_SIZE);
+    source_str  = (char*) malloc(sizeof(char) * MAX_SOURCE_SIZE);
+    fread( temp_source, 1, MAX_SOURCE_SIZE, fp);
+    sprintf(source_str, "float f(float x){return (%s);} \n %s", f, temp_source);
+    //printf("\nfunction : \n%s \n", source_str);
+    source_size = strlen(source_str);
     fclose( fp );
+    free(temp_source);
 
     cl_platform_id platform_id = NULL;
     cl_device_id device_id = NULL;   
@@ -50,10 +52,11 @@ float util_integrate(float a, float b, float n) {
     ret = clBuildProgram(program, 1, &device_id, NULL, NULL, NULL);
 
     cl_kernel kernel = clCreateKernel(program, "vector_add", &ret);
-    
-    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a_obj);    // set arguments of kernel
-    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&dx_obj);    // set arguments of kernel
-    ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&result_obj);    // set arguments of kernel
+
+    // set arguments of kernel
+    ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a_obj);    
+    ret = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&dx_obj);
+    ret = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&result_obj);
 
     // execute kernel
     size_t global_item_size = n;
@@ -79,7 +82,12 @@ float util_integrate(float a, float b, float n) {
     ret = clReleaseCommandQueue(command_queue);
     ret = clReleaseContext(context);
     free(results);
+    free(source_str);
 
     return res;
-
 }
+
+//int main() {
+//    printf("%f \n", util_integrate(0, 4, 100, "x+1"));
+//    return 0;
+//}
