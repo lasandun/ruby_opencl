@@ -10,9 +10,9 @@ end
 
 def performance_test(lower_bound, upper_bound, max_steps, file_path)
     File.open(file_path, "a") do |line|
-        v = max_steps / 5000000
+        v = max_steps / 200000
         for k in 1..v
-            steps = k * 5000000
+            steps = k * 200000
             start = Time.now
             integrate(lower_bound, upper_bound, steps, "x*x+2*x+1")
             finish = Time.now
@@ -28,4 +28,4 @@ def performance_test(lower_bound, upper_bound, max_steps, file_path)
     end
 end
 
-performance_test(0, 4, 50000000, "/home/lahiru/performanceTest/out.txt")
+performance_test(0, 4, 2000000, "./performanceTesting/out.txt")
