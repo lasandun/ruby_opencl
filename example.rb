@@ -8,18 +8,18 @@ def rb_integrate(lower_bound, upper_bound, n, &f)
       }*d
 end
 
-def performance_test(max_steps, file_path)
+def performance_test(lower_bound, upper_bound, max_steps, file_path)
     File.open(file_path, "a") do |line|
         v = max_steps / 5000000
         for k in 1..v
             steps = k * 5000000
             start = Time.now
-            integrate(0, 4, 1000000, "x*x+2*x+1")#(0, 10, steps){|x| x**2+2*x+1}
+            integrate(lower_bound, upper_bound, steps, "x*x+2*x+1")
             finish = Time.now
             opencl = finish-start
 
             start = Time.now
-            rb_integrate(0, 4, 1000000){|x| x**2+2*x+1}
+            rb_integrate(lower_bound, upper_bound, steps){|x| x**2+2*x+1}
             finish = Time.now
             ruby = finish-start
 
@@ -28,4 +28,4 @@ def performance_test(max_steps, file_path)
     end
 end
 
-performance_test(20000000, "/home/lahiru/performanceTest/out.txt")
+performance_test(0, 4, 50000000, "/home/lahiru/performanceTest/out.txt")
