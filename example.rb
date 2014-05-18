@@ -28,4 +28,5 @@ def performance_test(lower_bound, upper_bound, max_steps, file_path)
     end
 end
 
-performance_test(0, 4, 2000000, "./performanceTesting/out.txt")
+performance_test(0, 4, 2000000, "./performanceTesting/GPU.txt")
+performance_test(0, 4, 2000000, "./performanceTesting/CPU.txt")
