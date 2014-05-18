@@ -41,7 +41,7 @@ float util_integrate(float a, float b, float n, char* f) {
     cl_context context = clCreateContext( NULL, 1, &device_id, NULL, NULL, &ret);
     cl_command_queue command_queue = clCreateCommandQueue(context, device_id, 0, &ret);    
 
-    cl_mem a_obj  = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float), NULL, &ret);
+    cl_mem a_obj  = clCreateBuffer(context, CL_MEM_READ_ONLY, n * sizeof(float), NULL, &ret);
     cl_mem dx_obj = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float), NULL, &ret);
     cl_mem n_obj  = clCreateBuffer(context, CL_MEM_READ_ONLY, sizeof(float), NULL, &ret);
     cl_mem result_obj = clCreateBuffer(context, CL_MEM_READ_WRITE, n * sizeof(float), NULL, &ret);
